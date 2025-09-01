@@ -376,6 +376,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css" />
   <link rel="stylesheet" href="https://unpkg.com/splitting/dist/splitting.css" />
   <link rel="stylesheet" href="https://unpkg.com/splitting/dist/splitting-cells.css" />
+  <link rel="stylesheet" href="https://fonts.bunny.net/css?family=jura:300,500" />
   <style>
     .reveal {
       opacity: 0;
@@ -402,10 +403,444 @@
         opacity: 1;
       }
     }
+
+    /* Navbar Overlay Styles */
+    :root {
+      --_nav-f-family: "Jura", sans-serif;
+      --_nav-btn-transition-duration: 150ms;
+      --_nav-btn-clr: light-dark(#222, white);
+      --_nav-btn-clr-hover: rgb(254, 154, 0);
+      --_nav-btn-clr-expanded: light-dark(var(--txt-light), var(--txt-dark));
+      --_nav-bg-open: rgb(137, 75, 0);
+      --_nav-bg-open_half: rgb(254, 154, 0);
+      --_nav-panel-border-radius: 30px;
+      --_nav-panel-transition-duration: 1000ms;
+      --_nav-panel-transition-timing-function: cubic-bezier(0.86, 0, 0.672, 1.003);
+      --_nav-link-clr: light-dark(var(--txt-light), var(--txt-dark));
+      --_nav-link-clr-hover: rgb(254, 154, 0);
+      --_nav-link-bg-clr-hover: rgb(137, 75, 0);
+      --bg-dark: rgb(16, 24, 40);
+      --bg-light: rgb(255, 237, 212);
+      --txt-light: rgb(10, 10, 10);
+      --txt-dark: rgb(245, 245, 245);
+    }
+
+    nav {
+      position: fixed;
+      top: 0;
+      right: 0;
+      padding: 1rem;
+      z-index: 9999;
+      container: nav inline-size;
+    }
+
+    nav>button {
+      margin-top: 2rem;
+    }
+
+    nav::before,
+    nav::after {
+      content: "";
+      position: fixed;
+      top: 0;
+      right: 0;
+      transition: width 600ms cubic-bezier(0.86, 0, 0.672, 1.003);
+      border-radius: 30px 0 0 30px;
+      height: 100vh;
+      z-index: -1;
+    }
+
+    nav::before {
+      width: var(--_nav-bg-w, 0);
+      background-color: rgb(137, 75, 0);
+    }
+
+    nav::after {
+      width: var(--_nav-bg-w_after, 0);
+      background-color: rgb(254, 154, 0);
+    }
+
+    nav:has([aria-expanded="true"]) {
+      --_nav-bg-w: calc(100vw + 30px);
+      --_nav-bg-w_after: calc(33vw + 30px);
+    }
+
+    nav>button {
+      appearance: none;
+      border: none;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      background-color: transparent;
+      border-radius: 3px;
+      color: var(--_nav-btn-clr);
+      transition: color var(--_nav-btn-transition-duration) ease-in-out;
+      position: relative;
+      z-index: 2;
+      cursor: pointer;
+    }
+
+    nav>button>svg path {
+      transition-property: color, scale, rotate;
+      transition-duration: var(--_nav-btn-transition-duration);
+      transition-timing-function: ease-in-out;
+      transition-delay: 0ms;
+      transform-origin: center center;
+    }
+
+    nav>button:focus-visible {
+      outline: 1px dashed steelblue;
+    }
+
+    nav>button:is(:hover, :focus-visible) {
+      color: var(--_nav-btn-clr-hover);
+    }
+
+    nav>button::before {
+      content: "Menu";
+      transition: color var(--_nav-btn-transition-duration) ease-in-out;
+    }
+
+    nav>button[aria-expanded="true"] {
+      color: var(--_nav-btn-clr-expanded);
+    }
+
+    nav>button[aria-expanded="true"]::before {
+      content: "Close";
+    }
+
+    nav>button[aria-expanded="true"]>svg path:is(:nth-of-type(1), :nth-of-type(4)) {
+      scale: 0 1;
+    }
+
+    nav>button[aria-expanded="true"]>svg path:nth-of-type(2) {
+      rotate: -45deg;
+    }
+
+    nav>button[aria-expanded="true"]>svg path:nth-of-type(3) {
+      rotate: 45deg;
+    }
+
+    /* Navbar menu panel */
+    nav>ul {
+      position: fixed;
+      background-color: light-dark(var(--bg-light), var(--bg-dark));
+      border-radius: 30px 0 0 30px;
+      overflow: hidden;
+      top: 0;
+      right: 0;
+      margin: 0;
+      padding: 0;
+      width: fit-content;
+      height: 100vh;
+      list-style: none;
+      transform: translateX(var(--_nav-panel-translate-x, 100%));
+      transition: transform 1000ms cubic-bezier(0.86, 0, 0.672, 1.003);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-evenly;
+      align-items: flex-start;
+      padding: 10vh 0;
+    }
+
+    nav>ul[aria-hidden="false"] {
+      --_nav-panel-translate-x: 0;
+      --_nav-link-txt-rotate: 0deg;
+      --_nav-link-txt-translate: 0;
+    }
+
+    nav>ul>li {
+      --_nav-link-transition-duration: 350ms;
+      --_nav-link-transition-timing-function: ease-in-out;
+      padding: 0;
+      margin: 0;
+      overflow-y: clip;
+    }
+
+    nav>ul>li:nth-child(1) {
+      --i: 1;
+      margin-block-start: 60px;
+    }
+
+    nav>ul>li>a {
+      --_nav-txt-intro-duration: 300ms;
+      --_nav-txt-intro-delay: calc(var(--i) * 50ms + var(--_nav-panel-transition-duration) * 1);
+      --_nav-txt-intro-timing-function: ease-in-out;
+      font-family: var(--_nav-f-family);
+      letter-spacing: 0.05rem;
+      position: relative;
+      display: flex;
+      font-size: clamp(2rem, 2.5vw + 0.5rem, 5rem);
+      font-weight: 700;
+      text-transform: uppercase;
+      line-height: 1;
+      padding: 0.5rem 6rem 0.5rem 2rem;
+      text-decoration: none;
+      color: var(--_nav-link-clr);
+      isolation: isolate;
+      transform-origin: left;
+      transform: translateY(var(--_nav-link-txt-translate, 100%));
+      transition-property: transform;
+      transition-duration: var(--_nav-txt-intro-duration);
+      transition-delay: var(--_nav-txt-intro-delay, 0ms);
+      transition-timing-function: var(--_nav-txt-intro-timing-function);
+    }
+
+    nav>ul>li>a>span {
+      display: block;
+      transition: transform var(--_nav-link-transition-duration) var(--_nav-link-transition-timing-function),
+        translate 0ms calc(var(--_nav-link-transition-duration) / 2),
+        color 0ms calc(var(--_nav-link-transition-duration) / 2);
+    }
+
+    nav>ul>li>a::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-color: var(--_nav-link-bg-clr-hover);
+      translate: 0 2lh;
+      z-index: -1;
+      transition: all calc(var(--_nav-link-transition-duration) * 1) ease-in-out;
+    }
+
+    nav>ul>li>a:is(:hover, :focus-visible) {
+      color: var(--_nav-link-clr-hover);
+    }
+
+    nav>ul>li>a:is(:hover, :focus-visible)>span {
+      transform: translateY(-2lh);
+      translate: 0 2lh;
+      color: var(--_nav-link-clr-hover);
+    }
+
+    /* Accordion Styles */
+    .accordion-item {
+      position: relative;
+    }
+
+    .accordion-trigger {
+      --_nav-txt-intro-duration: 300ms;
+      --_nav-txt-intro-delay: calc(var(--i) * 50ms + 1000ms * 1);
+      --_nav-txt-intro-timing-function: ease-in-out;
+      font-family: var(--_nav-f-family);
+      letter-spacing: 0.05rem;
+      position: relative;
+      display: flex;
+      font-size: clamp(2rem, 2.5vw + 0.5rem, 5rem);
+      font-weight: 700;
+      text-transform: uppercase;
+      line-height: 1;
+      padding: 0.5rem 6rem 0.5rem 2rem;
+      text-decoration: none;
+      color: var(--_nav-link-clr);
+      isolation: isolate;
+      transform-origin: left;
+      transform: translateY(var(--_nav-link-txt-translate, 100%));
+      transition-property: transform;
+      transition-duration: var(--_nav-txt-intro-duration);
+      transition-delay: var(--_nav-txt-intro-delay, 0ms);
+      transition-timing-function: var(--_nav-txt-intro-timing-function);
+      cursor: pointer;
+      background: none;
+      border: none;
+      width: 100%;
+      text-align: left;
+    }
+
+    .accordion-trigger::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-color: var(--_nav-link-bg-clr-hover);
+      translate: 0 2lh;
+      z-index: -1;
+      transition: all calc(var(--_nav-link-transition-duration) * 1) ease-in-out;
+      pointer-events: none;
+    }
+
+    .accordion-trigger::after {
+      content: "+";
+      position: absolute;
+      right: 2rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 2rem;
+      font-weight: 300;
+      transition: transform 300ms ease-in-out;
+      color: var(--_nav-link-clr);
+    }
+
+    .accordion-item.active .accordion-trigger::after {
+      transform: translateY(-50%) rotate(45deg);
+    }
+
+    .accordion-trigger:is(:hover, :focus-visible) {
+      color: var(--_nav-link-clr-hover);
+    }
+
+    .accordion-trigger:is(:hover, :focus-visible)::before {
+      translate: 0 0;
+    }
+
+    .accordion-trigger:is(:hover, :focus-visible)>span {
+      transform: translateY(-2lh);
+      translate: 0 2lh;
+      color: var(--_nav-link-clr-hover);
+    }
+
+    /* Reset hover effects when accordion is active */
+    .accordion-item.active .accordion-trigger {
+      color: var(--_nav-link-clr);
+    }
+
+    .accordion-item.active .accordion-trigger::before {
+      translate: 0 2lh;
+      opacity: 0;
+    }
+
+    .accordion-item.active .accordion-trigger>span {
+      transform: translateY(0);
+      translate: 0 0;
+      color: var(--_nav-link-clr);
+    }
+
+    .accordion-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 300ms ease-in-out;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .accordion-item.active .accordion-content {
+      max-height: 300px;
+    }
+
+    .accordion-content li {
+      --i: 2.1;
+    }
+
+    .accordion-content li a {
+      --_nav-txt-intro-duration: 300ms;
+      --_nav-txt-intro-delay: calc(var(--i) * 50ms + 1000ms * 1);
+      --_nav-txt-intro-timing-function: ease-in-out;
+      font-family: var(--_nav-f-family);
+      letter-spacing: 0.05rem;
+      position: relative;
+      display: flex;
+      font-size: clamp(1.2rem, 1.5vw + 0.3rem, 2.5rem);
+      font-weight: 500;
+      text-transform: uppercase;
+      line-height: 1;
+      padding: 0.3rem 4rem 0.3rem 3rem;
+      text-decoration: none;
+      color: var(--_nav-link-clr);
+      isolation: isolate;
+      transform-origin: left;
+      transform: translateY(var(--_nav-link-txt-translate, 100%));
+      transition-property: transform;
+      transition-duration: var(--_nav-txt-intro-duration);
+      transition-delay: var(--_nav-txt-intro-delay, 0ms);
+      transition-timing-function: var(--_nav-txt-intro-timing-function);
+    }
+
+    .accordion-content li a::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-color: var(--_nav-link-bg-clr-hover);
+      translate: 0 2lh;
+      z-index: -1;
+      transition: all calc(var(--_nav-link-transition-duration) * 1) ease-in-out;
+      opacity: 0;
+    }
+
+    .accordion-content li a::after {
+      content: "";
+      position: absolute;
+      bottom: 0.2rem;
+      left: 3rem;
+      right: 4rem;
+      height: 2px;
+      background-color: var(--_nav-link-clr-hover);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 300ms ease-in-out;
+    }
+
+    .accordion-content li a:is(:hover, :focus-visible)::after {
+      transform: scaleX(1);
+    }
+
+    nav>ul>li>a:is(:hover, :focus-visible)::before {
+      translate: 0 0;
+      transition-duration: calc(var(--_nav-link-transition-duration) * 0.75);
+    }
+
+
+
+    /* Ensure navbar is above all other content */
+    body:has(nav > ul[aria-hidden="false"])>*:not(nav),
+    body:has(nav > ul[aria-hidden="false"])::after {
+      filter: blur(2px) grayscale(1) opacity(0.5);
+      z-index: -1;
+    }
   </style>
 </head>
 
 <body>
+  <!-- Navbar Overlay -->
+  <nav>
+    <button type="button" id="btn-nav-toggle" aria-expanded="false" aria-controls="nav-menu"
+      aria-label="Toggle navigation menu">
+      <!--Menu-->
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+        <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 6l16 0" />
+          <path d="M4 12l16 0" />
+          <path d="M4 12l16 0" />
+          <path d="M4 18l16 0" />
+        </g>
+      </svg>
+    </button>
+
+    <ul id="nav-menu" role='list' aria-labelledby="btn-nav-toggle" aria-hidden="true">
+      <li style="--i: 1;"><a href="#header" data-target="#header"><span>Home</span></a></li>
+      <li style="--i: 2;" class="accordion-item">
+        <button type="button" class="accordion-trigger"><span>About</span></button>
+        <ul class="accordion-content">
+          <li style="--i: 2.1;"><a href="#details" data-target="#details"><span>Profile</span></a></li>
+          <li style="--i: 2.2;"><a href="#experience" data-target="#experience"><span>Experience</span></a></li>
+          <li style="--i: 2.3;"><a href="#education" data-target="#education"><span>Education</span></a></li>
+        </ul>
+      </li>
+      <li style="--i: 3;" class="accordion-item">
+        <button type="button" class="accordion-trigger"><span>Portfolio</span></button>
+        <ul class="accordion-content">
+          <li style="--i: 3.1;"><a href="#orda-rides" data-target="#orda-rides"><span>ORDA Rides</span></a></li>
+          <li style="--i: 3.2;"><a href="#scalepoint-erp" data-target="#scalepoint-erp"><span>ScalePoint ERP</span></a>
+          </li>
+          <li style="--i: 3.3;"><a href="#pomodoro-play" data-target="#pomodoro-play"><span>Pomodoro Play</span></a>
+          </li>
+          <li style="--i: 3.4;"><a href="#msunit" data-target="#msunit"><span>MSUnit</span></a></li>
+        </ul>
+      </li>
+      <li style="--i: 4;" class="accordion-item">
+        <button type="button" class="accordion-trigger"><span>Contact</span></button>
+        <ul class="accordion-content">
+          <li style="--i: 4.1;"><a href="#github-contact" data-target="#github-contact"><span>GitHub</span></a></li>
+          <li style="--i: 4.2;"><a href="#linkedin-contact" data-target="#linkedin-contact"><span>LinkedIn</span></a>
+          </li>
+          <li style="--i: 4.3;"><a href="#email-contact" data-target="#email-contact"><span>Email</span></a></li>
+          <li style="--i: 4.4;"><a href="#phone-contact" data-target="#phone-contact"><span>Phone</span></a></li>
+        </ul>
+      </li>
+      <li style="--i: 5;"><a href="https://omariomari2.github.io/portfolio/src/my_resume.pdf" target="_blank"
+          rel="noopener noreferrer"><span>Resume</span></a></li>
+    </ul>
+  </nav>
+
   <main class="page-wrapper">
     <header id="header" data-w-id="13175f13-b588-6ca3-c25c-205b77b7efa4" class="home-header-wrapper">
       <div class="home-header h-full-mobile">
@@ -579,7 +1014,7 @@
 
         </div>
       </a>
-      <div class="grid-about-box education">
+      <div id="education" class="grid-about-box education">
         <div class="grid-services-description">
           <h3 class="grid-about-service-title color-dark">
             Grambling State University, LA, USA</h3>
@@ -593,7 +1028,7 @@
       </div>
 
       <!-- Experience tab spanning 2x2 -->
-      <div class="grid-about-box large-tab experience-tab">
+      <div id="experience" class="grid-about-box large-tab experience-tab">
         <div class="grid-services-description">
           <h3 class="grid-about-service-title color-dark">
             Professional Experience</h3>
@@ -635,7 +1070,7 @@
     </section>
     <div class="w-dyn-list" id="creatorled-project">
       <section role="list" class="projects-list pointer-events-none w-dyn-items">
-        <div data-w-id="e8488946-1a79-18ad-df71-963a47cd2cff" role="listitem"
+        <div id="orda-rides" data-w-id="e8488946-1a79-18ad-df71-963a47cd2cff" role="listitem"
           class="projects-list-item pointer-events-none w-dyn-item">
           <div class="project-item-sticky h-full-mobile">
             <div data-w-id="cbb901ab-fc63-7135-1d59-8cca202742ce" class="projects-item-inner">
@@ -691,7 +1126,7 @@
             </div>
           </div>
         </div>
-        <div data-w-id="e8488946-1a79-18ad-df71-963a47cd2cff" role="listitem"
+        <div id="scalepoint-erp" data-w-id="e8488946-1a79-18ad-df71-963a47cd2cff" role="listitem"
           class="projects-list-item pointer-events-none w-dyn-item">
           <div class="project-item-sticky h-full-mobile">
             <div data-w-id="cbb901ab-fc63-7135-1d59-8cca202742ce" class="projects-item-inner">
@@ -745,7 +1180,7 @@
             </div>
           </div>
         </div>
-        <div data-w-id="e8488946-1a79-18ad-df71-963a47cd2cff" role="listitem"
+        <div id="pomodoro-play" data-w-id="e8488946-1a79-18ad-df71-963a47cd2cff" role="listitem"
           class="projects-list-item pointer-events-none w-dyn-item">
           <div class="project-item-sticky h-full-mobile">
             <div data-w-id="cbb901ab-fc63-7135-1d59-8cca202742ce" class="projects-item-inner">
@@ -796,7 +1231,7 @@
             </div>
           </div>
         </div>
-        <div data-w-id="e8488946-1a79-18ad-df71-963a47cd2cff" role="listitem"
+        <div id="msunit" data-w-id="e8488946-1a79-18ad-df71-963a47cd2cff" role="listitem"
           class="projects-list-item pointer-events-none w-dyn-item">
           <div class="project-item-sticky h-full-mobile">
             <div data-w-id="cbb901ab-fc63-7135-1d59-8cca202742ce" class="projects-item-inner">
@@ -1003,7 +1438,8 @@
         <div class="grid-services-actions">
           <div class="social-links"
             style="display: flex; gap: 45px; justify-content: center; align-items: center; flex-wrap: wrap;">
-            <a href="https://github.com/omariomari2" target="_blank" class="social-link w-inline-block">
+            <a id="github-contact" href="https://github.com/omariomari2" target="_blank"
+              class="social-link w-inline-block">
               <div class="social-link-icon w-embed">
                 <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
                   style="width: 48px; height: 48px;">
@@ -1013,7 +1449,8 @@
                 </svg>
               </div>
             </a>
-            <a href="https://www.linkedin.com/in/owusuomaribright" target="_blank" class="social-link w-inline-block">
+            <a id="linkedin-contact" href="https://www.linkedin.com/in/owusuomaribright" target="_blank"
+              class="social-link w-inline-block">
               <div class="social-link-icon w-embed">
                 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 48px; height: 48px;">
                   <path
@@ -1022,7 +1459,7 @@
                 </svg>
               </div>
             </a>
-            <a href="mailto:owusuomaribright@gmail.com" class="social-link w-inline-block">
+            <a id="email-contact" href="mailto:owusuomaribright@gmail.com" class="social-link w-inline-block">
               <div class="social-link-icon w-embed">
                 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 48px; height: 48px;">
                   <path fill="currentColor"
@@ -1030,7 +1467,7 @@
                 </svg>
               </div>
             </a>
-            <a href="tel:+13183946621" class="social-link w-inline-block">
+            <a id="phone-contact" href="tel:+13183946621" class="social-link w-inline-block">
               <div class="social-link-icon w-embed">
                 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 48px; height: 48px;">
                   <path fill="currentColor"
@@ -1220,6 +1657,116 @@
     });
 
     requestAnimationFrame(raf)
+
+    // Navbar functionality
+    console.clear();
+    const navToggleBtn = document.getElementById("btn-nav-toggle");
+    const navMenu = document.getElementById("nav-menu");
+
+    // Accordion functionality
+    function initAccordion() {
+      const accordionTriggers = document.querySelectorAll('.accordion-trigger');
+      console.log('Found accordion triggers:', accordionTriggers.length);
+
+      accordionTriggers.forEach(trigger => {
+        trigger.addEventListener('click', (e) => {
+          console.log('Accordion clicked!');
+          e.preventDefault();
+          e.stopPropagation();
+          const accordionItem = trigger.closest('.accordion-item');
+          const isActive = accordionItem.classList.contains('active');
+          console.log('Is active:', isActive);
+
+          // Close all accordions
+          document.querySelectorAll('.accordion-item').forEach(item => {
+            item.classList.remove('active');
+          });
+
+          // Toggle current accordion
+          if (!isActive) {
+            accordionItem.classList.add('active');
+            console.log('Added active class');
+          }
+        });
+      });
+    }
+
+    // Initialize accordion after DOM is ready
+    initAccordion();
+
+    // Close accordion when submenu items are clicked
+    function initSubmenuClose() {
+      const submenuLinks = document.querySelectorAll('.accordion-content a');
+
+      submenuLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+          // Close the accordion
+          const accordionItem = link.closest('.accordion-item');
+          accordionItem.classList.remove('active');
+
+          // Also close the navbar after a short delay to allow smooth scrolling
+          setTimeout(() => {
+            toggleNav(false);
+          }, 100);
+        });
+      });
+    }
+
+    // Initialize submenu close functionality
+    initSubmenuClose();
+
+    // Toggle nav button
+    navToggleBtn.addEventListener("click", (event) => {
+      event.stopPropagation(); // Prevent immediate closing when clicking the button
+      const isExpanded = navToggleBtn.getAttribute("aria-expanded") === "true";
+      toggleNav(!isExpanded);
+    });
+
+    // Toggle nav panel
+    function toggleNav(expand) {
+      navToggleBtn.setAttribute("aria-expanded", String(expand));
+      navMenu.setAttribute("aria-hidden", String(!expand));
+      navMenu.toggleAttribute("inert", !expand);
+
+      // add/remove event handler on dom to close nav panel
+      expand && document.addEventListener("click", handleOutsideClick);
+      !expand && document.removeEventListener("click", handleOutsideClick);
+    }
+
+    function handleOutsideClick(event) {
+      if (!navMenu.contains(event.target) && !navToggleBtn.contains(event.target)) {
+        toggleNav(false);
+      }
+    }
+
+    // Handle navbar link clicks
+    const navLinks = document.querySelectorAll('nav > ul > li > a');
+    navLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        // If it's an internal link with data-target, use smooth scroll
+        if (link.hasAttribute('data-target')) {
+          e.preventDefault();
+          const target = link.getAttribute('data-target');
+          const targetElement = document.querySelector(target);
+
+          if (targetElement) {
+            // Close navbar first
+            toggleNav(false);
+
+            // Use existing smooth scroll functionality
+            lenis.scrollTo(targetElement.offsetTop, {
+              offset: 0,
+              immediate: false,
+              duration: 3,
+              easing: (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2),
+            });
+          }
+        } else {
+          // For external links (like Resume), just close the navbar
+          toggleNav(false);
+        }
+      });
+    });
   </script>
 </body>
 
